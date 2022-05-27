@@ -1,15 +1,16 @@
 package com.google.ads.rewardedinterstitialexample;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import com.google.ads.rewardedinterstitialexample.AdDialogFragment.AdDialogInteractionListener;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
@@ -24,6 +25,7 @@ import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 
 /** Main Activity. Inflates main activity xml. */
+@SuppressLint("SetTextI18n")
 public class MainActivity extends AppCompatActivity {
   private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/5354046379";
   private static final long COUNTER_TIME = 10;
@@ -45,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    // Log the Mobile Ads SDK version.
+    Log.d(TAG, "Google Mobile Ads SDK Version: " + MobileAds.getVersion());
+
     MobileAds.initialize(
         this,
         new OnInitializationCompleteListener() {

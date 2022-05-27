@@ -18,6 +18,7 @@ package com.google.android.gms.example.adaptivebannerexample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.util.DisplayMetrics
+import android.util.Log
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -25,7 +26,9 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import kotlinx.android.synthetic.main.activity_my.*
 
-/** Main Activity. Inflates main activity xml and child fragments.  */
+private const val TAG = "MyActivity"
+
+/** Main Activity. Inflates main activity xml and child fragments. */
 class MyActivity : AppCompatActivity() {
   private lateinit var adView: AdView
 
@@ -53,17 +56,18 @@ class MyActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_my)
 
+    // Log the Mobile Ads SDK version.
+    Log.d(TAG, "Google Mobile Ads SDK Version: " + MobileAds.getVersion())
+
     // Initialize the Mobile Ads SDK.
-    MobileAds.initialize(this) { }
+    MobileAds.initialize(this) {}
 
     // Set your test devices. Check your logcat output for the hashed device ID to
     // get test ads on a physical device. e.g.
     // "Use RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("ABCDEF012345"))
     // to get test ads on this device."
     MobileAds.setRequestConfiguration(
-      RequestConfiguration.Builder()
-        .setTestDeviceIds(listOf("ABCDEF012345"))
-        .build()
+      RequestConfiguration.Builder().setTestDeviceIds(listOf("ABCDEF012345")).build()
     )
 
     adView = AdView(this)
@@ -78,19 +82,19 @@ class MyActivity : AppCompatActivity() {
     }
   }
 
-  /** Called when leaving the activity  */
+  /** Called when leaving the activity */
   public override fun onPause() {
     adView.pause()
     super.onPause()
   }
 
-  /** Called when returning to the activity  */
+  /** Called when returning to the activity */
   public override fun onResume() {
     super.onResume()
     adView.resume()
   }
 
-  /** Called before the activity is destroyed  */
+  /** Called before the activity is destroyed */
   public override fun onDestroy() {
     adView.destroy()
     super.onDestroy()

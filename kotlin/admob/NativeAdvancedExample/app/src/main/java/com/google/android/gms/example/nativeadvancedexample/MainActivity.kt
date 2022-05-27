@@ -17,6 +17,7 @@ package com.google.android.gms.example.nativeadvancedexample
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -40,17 +41,19 @@ import kotlinx.android.synthetic.main.activity_main.refresh_button
 import kotlinx.android.synthetic.main.activity_main.start_muted_checkbox
 import kotlinx.android.synthetic.main.activity_main.videostatus_text
 
+private const val TAG = "MainActivity"
 const val ADMOB_AD_UNIT_ID = "ca-app-pub-3940256099942544/2247696110"
 var currentNativeAd: NativeAd? = null
 
-/**
- * A simple activity class that displays native ad formats.
- */
+/** A simple activity class that displays native ad formats. */
 class MainActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
+
+    // Log the Mobile Ads SDK version.
+    Log.d(TAG, "Google Mobile Ads SDK Version: " + MobileAds.getVersion())
 
     // Initialize the Mobile Ads SDK.
     MobileAds.initialize(this) {}
@@ -61,8 +64,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   /**
-   * Populates a [NativeAdView] object with data from a given
-   * [NativeAd].
+   * Populates a [NativeAdView] object with data from a given [NativeAd].
    *
    * @param nativeAd the object containing the ad's assets
    * @param adView the view to be populated
@@ -104,9 +106,7 @@ class MainActivity : AppCompatActivity() {
     if (nativeAd.icon == null) {
       adView.iconView.visibility = View.GONE
     } else {
-      (adView.iconView as ImageView).setImageDrawable(
-        nativeAd.icon.drawable
-      )
+      (adView.iconView as ImageView).setImageDrawable(nativeAd.icon.drawable)
       adView.iconView.visibility = View.VISIBLE
     }
 
@@ -151,15 +151,16 @@ class MainActivity : AppCompatActivity() {
       // Create a new VideoLifecycleCallbacks object and pass it to the VideoController. The
       // VideoController will call methods on this object when events occur in the video
       // lifecycle.
-      vc.videoLifecycleCallbacks = object : VideoController.VideoLifecycleCallbacks() {
-        override fun onVideoEnd() {
-          // Publishers should allow native ads to complete video playback before
-          // refreshing or replacing them with another ad in the same UI location.
-          refresh_button.isEnabled = true
-          videostatus_text.text = "Video status: Video playback has ended."
-          super.onVideoEnd()
+      vc.videoLifecycleCallbacks =
+        object : VideoController.VideoLifecycleCallbacks() {
+          override fun onVideoEnd() {
+            // Publishers should allow native ads to complete video playback before
+            // refreshing or replacing them with another ad in the same UI location.
+            refresh_button.isEnabled = true
+            videostatus_text.text = "Video status: Video playback has ended."
+            super.onVideoEnd()
+          }
         }
-      }
     } else {
       videostatus_text.text = "Video status: Ad does not contain a video asset."
       refresh_button.isEnabled = true
@@ -169,7 +170,6 @@ class MainActivity : AppCompatActivity() {
   /**
    * Creates a request for a new native ad based on the boolean parameters and calls the
    * corresponding "populate" method when one is successfully returned.
-   *
    */
   private fun refreshAd() {
     refresh_button.isEnabled = false
@@ -192,36 +192,38 @@ class MainActivity : AppCompatActivity() {
       // otherwise you will have a memory leak.
       currentNativeAd?.destroy()
       currentNativeAd = nativeAd
-      val adView = layoutInflater
-        .inflate(R.layout.ad_unified, null) as NativeAdView
+      val adView = layoutInflater.inflate(R.layout.ad_unified, null) as NativeAdView
       populateNativeAdView(nativeAd, adView)
       ad_frame.removeAllViews()
       ad_frame.addView(adView)
     }
 
-    val videoOptions = VideoOptions.Builder()
-      .setStartMuted(start_muted_checkbox.isChecked)
-      .build()
+    val videoOptions = VideoOptions.Builder().setStartMuted(start_muted_checkbox.isChecked).build()
 
-    val adOptions = NativeAdOptions.Builder()
-      .setVideoOptions(videoOptions)
-      .build()
+    val adOptions = NativeAdOptions.Builder().setVideoOptions(videoOptions).build()
 
     builder.withNativeAdOptions(adOptions)
 
-    val adLoader = builder.withAdListener(object : AdListener() {
-      override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-        val error =
-          """
+    val adLoader =
+      builder
+        .withAdListener(
+          object : AdListener() {
+            override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+              val error =
+                """
            domain: ${loadAdError.domain}, code: ${loadAdError.code}, message: ${loadAdError.message}
           """"
-        refresh_button.isEnabled = true
-        Toast.makeText(
-          this@MainActivity, "Failed to load native ad with error $error",
-          Toast.LENGTH_SHORT
-        ).show()
-      }
-    }).build()
+              refresh_button.isEnabled = true
+              Toast.makeText(
+                  this@MainActivity,
+                  "Failed to load native ad with error $error",
+                  Toast.LENGTH_SHORT
+                )
+                .show()
+            }
+          }
+        )
+        .build()
 
     adLoader.loadAd(AdRequest.Builder().build())
 
