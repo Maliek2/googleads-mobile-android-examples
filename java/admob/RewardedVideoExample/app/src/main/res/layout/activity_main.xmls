@@ -10,7 +10,7 @@
         android:id="@+id/game_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/impossible_game"
+        android:text="@string/Abt News"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_marginTop="50dp"
         app:layout_constraintTop_toTopOf="parent"
